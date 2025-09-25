@@ -1,0 +1,2504 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台灣塑膠產業ESG循環經濟智能分析平台</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0c4a6e 0%, #075985 25%, #0e7490 50%, #0f766e 75%, #065f46 100%);
+            background-size: 400% 400%;
+            animation: gradientFlow 20s ease infinite;
+            color: #1f2937;
+            min-height: 100vh;
+        }
+
+        @keyframes gradientFlow {
+            0%, 100% { background-position: 0% 50%; }
+            25% { background-position: 100% 50%; }
+            50% { background-position: 100% 100%; }
+            75% { background-position: 0% 100%; }
+        }
+
+        .app-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* 側邊導航 */
+        .sidebar {
+            width: 280px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-right: 1px solid rgba(148, 163, 184, 0.2);
+            padding: 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        .sidebar-header {
+            padding: 30px 20px;
+            border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+            text-align: center;
+        }
+
+        .logo {
+            color: #10b981;
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .logo-subtitle {
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        .nav-menu {
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 25px;
+            color: #94a3b8;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: #10b981;
+            border-left-color: #10b981;
+        }
+
+        .nav-icon {
+            margin-right: 15px;
+            font-size: 1.2rem;
+            width: 20px;
+        }
+
+        .nav-text {
+            font-weight: 500;
+        }
+
+        /* 主內容區 */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            padding: 0;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 80px;
+        }
+
+        /* 頂部工具列 */
+        .top-bar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(15px);
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .page-title {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        .top-controls {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* 頁面內容 */
+        .page-content {
+            padding: 30px;
+            min-height: calc(100vh - 80px);
+        }
+
+        .page {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 卡片系統 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #10b981, #059669);
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #374151;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-icon {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(45deg, #10b981, #059669);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+        }
+
+        .card-menu {
+            background: #f3f4f6;
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        /* 統計數字卡片 */
+        .stat-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(16, 185, 129, 0.05));
+            pointer-events: none;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #059669;
+            margin-bottom: 8px;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-size: 0.95rem;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+            transition: color 0.3s ease;
+        }
+
+        .stat-trend {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .trend-up {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .trend-down {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .trend-stable {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        /* 圖表容器 */
+        .chart-container {
+            position: relative;
+            height: 350px;
+            margin: 20px 0;
+        }
+
+        .chart-container.large {
+            height: 450px;
+        }
+
+        /* 公司詳細卡片 */
+        .company-detail-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 0;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+        }
+
+        .company-header {
+            background: linear-gradient(135deg, #0891b2, #0e7490);
+            color: white;
+            padding: 30px;
+            position: relative;
+        }
+
+        .company-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .company-name {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .company-code {
+            font-size: 1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        .company-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border-left: 4px solid #10b981;
+        }
+
+        .metric-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #059669;
+            margin-bottom: 5px;
+        }
+
+        .metric-label {
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        /* 數據表格 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .data-table th {
+            background: #f8fafc;
+            padding: 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f3f4f6;
+            color: #6b7280;
+        }
+
+        .data-table tr:hover {
+            background: #f8fafc;
+        }
+
+        /* 進度條 */
+        .progress-container {
+            margin: 15px 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 12px;
+            background: #e5e7eb;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            border-radius: 6px;
+            transition: width 1.5s cubic-bezier(0.23, 1, 0.320, 1);
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* 標籤系統 */
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .tag.high {
+            background: #dcfce7;
+            color: #16a34a;
+        }
+
+        .tag.medium {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .tag.low {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        /* 過濾控制 */
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            color: white;
+            font-weight: 600;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 0.9rem;
+        }
+
+        .filter-select option {
+            background: #1f2937;
+            color: white;
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stat-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.mobile-open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+            
+            .stat-cards {
+                grid-template-columns: 1fr;
+            }
+            
+            .company-metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .top-bar {
+                padding: 15px 20px;
+            }
+            
+            .page-content {
+                padding: 20px;
+            }
+        }
+
+        /* 載入動畫 */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e5e7eb;
+            border-top: 4px solid #10b981;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 提示工具 */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+
+        .tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1f2937;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .tooltip:hover::after {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- 側邊導航 -->
+        <nav class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">♻️ ESG Analytics</div>
+                <div class="logo-subtitle">循環經濟分析平台</div>
+            </div>
+            
+            <div class="nav-menu">
+                <div class="nav-item active" data-page="overview">
+                    <span class="nav-icon">📊</span>
+                    <span class="nav-text">總覽儀表板</span>
+                </div>
+                <div class="nav-item" data-page="companies">
+                    <span class="nav-icon">🏢</span>
+                    <span class="nav-text">企業詳細分析</span>
+                </div>
+                <div class="nav-item" data-page="materials">
+                    <span class="nav-icon">🔄</span>
+                    <span class="nav-text">材料流向分析</span>
+                </div>
+                <div class="nav-item" data-page="energy">
+                    <span class="nav-icon">⚡</span>
+                    <span class="nav-text">能源碳排管理</span>
+                </div>
+                <div class="nav-item" data-page="trends">
+                    <span class="nav-icon">📈</span>
+                    <span class="nav-text">趨勢預測分析</span>
+                </div>
+            </div>
+        </nav>
+
+        <!-- 主內容區 -->
+        <main class="main-content" id="mainContent">
+            <!-- 頂部工具列 -->
+            <div class="top-bar">
+                <div>
+                    <h1 class="page-title" id="pageTitle">總覽儀表板</h1>
+                    <p class="page-subtitle" id="pageSubtitle">台灣塑膠產業ESG循環經濟綜合分析</p>
+                </div>
+                
+                <div class="top-controls">
+                    <button class="control-btn" onclick="toggleFullscreen()">⛶ 全螢幕</button>
+                </div>
+            </div>
+
+            <!-- 頁面內容 -->
+            <div class="page-content">
+                <!-- 總覽頁面 -->
+                <div class="page active" id="overview">
+                    <div class="filter-bar">
+                        <div class="filter-group">
+                            <label class="filter-label">年度</label>
+                            <select class="filter-select" id="yearFilter">
+                                <option value="all">全部年度</option>
+                                <option value="2024">2024年</option>
+                                <option value="2023">2023年</option>
+                                <option value="2022">2022年</option>
+                                <option value="2021">2021年</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">產業別</label>
+                            <select class="filter-select" id="industryFilter">
+                                <option value="all">全部產業</option>
+                                <option value="plastic">塑膠製品</option>
+                                <option value="chemical">化學工業</option>
+                                <option value="recycling">回收處理</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">規模</label>
+                            <select class="filter-select" id="sizeFilter">
+                                <option value="all">全部規模</option>
+                                <option value="large">大型企業</option>
+                                <option value="medium">中型企業</option>
+                                <option value="small">小型企業</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- 核心指標卡片 -->
+                    <div class="stat-cards">
+                        <div class="stat-card">
+                            <div class="stat-number">268,853</div>
+                            <div class="stat-label">總回收處理量 (噸)</div>
+                            <div class="stat-trend trend-up">▲ 12.3%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">479,160</div>
+                            <div class="stat-label">總碳減量效益 (噸CO2e)</div>
+                            <div class="stat-trend trend-up">▲ 8.7%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">62.4%</div>
+                            <div class="stat-label">平均回收利用率</div>
+                            <div class="stat-trend trend-up">▲ 5.2%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">1.8%</div>
+                            <div class="stat-label">再生能源使用率</div>
+                            <div class="stat-trend trend-up">▲ 0.4%</div>
+                        </div>
+                    </div>
+
+                    <!-- 主要圖表區域 -->
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">📈</span>
+                                    產業整體趨勢分析
+                                </h3>
+                                <button class="card-menu">⋮</button>
+                            </div>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5;">
+                                展示台灣塑膠產業2021-2025年回收量與碳減量雙軌發展趨勢，綠線代表實際回收處理量，藍線代表對應的碳排放減量效益。數據顯示產業在2023年觸底後，2024年開始回升。
+                            </p>
+                            <div class="chart-container large">
+                                <canvas id="industryTrendChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">🏭</span>
+                                    企業表現排名
+                                </h3>
+                            </div>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5;">
+                                <strong>評分標準：</strong>綜合評分由五個維度加權計算：回收效率(30%)、碳減量貢獻(25%)、創新技術(20%)、成本效益(15%)、合規程度(10%)。滿分100分，90分以上為優異，80-89分為良好，70-79分為合格，70分以下需改善。
+                            </p>
+                            <div class="chart-container">
+                                <canvas id="companyRankingChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">🌍</span>
+                                    碳足跡分析
+                                </h3>
+                            </div>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5;">
+                                依據GHG Protocol標準，分析企業溫室氣體排放結構：類別一為直接排放(如燃燒化石燃料)，類別二為間接排放(如外購電力)，類別三為其他間接排放(如供應鏈活動)。
+                            </p>
+                            <div class="chart-container">
+                                <canvas id="carbonFootprintChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">♻️</span>
+                                    材料循環效率
+                                </h3>
+                            </div>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5;">
+                                <strong>評分方法：</strong>雷達圖展示產業平均循環效率，各軸分數計算：回收率(實際回收量/總廢棄量×100)、純化度(合格再生料/總回收量×100)、成本效益(節約成本/投入成本×100)、技術水準與環保效益採專家評分制。
+                            </p>
+                            <div class="chart-container">
+                                <canvas id="materialEfficiencyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 企業詳細分析頁面 -->
+                <div class="page" id="companies">
+                    <!-- 搜尋功能 -->
+                    <div class="search-container" style="margin-bottom: 30px;">
+                        <div style="position: relative; max-width: 500px;">
+                            <input type="text" id="companySearch" placeholder="搜尋企業名稱..." 
+                                   style="width: 100%; padding: 15px 50px 15px 20px; 
+                                          border: 2px solid rgba(255,255,255,0.3); 
+                                          border-radius: 12px; background: rgba(255,255,255,0.1); 
+                                          color: white; font-size: 1rem; backdrop-filter: blur(10px);">
+                            <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
+                                        color: rgba(255,255,255,0.7); font-size: 1.2rem; pointer-events: none;">🔍</div>
+                        </div>
+                    </div>
+
+                    <!-- 南亞塑膠 -->
+                    <div class="company-detail-card" data-company="南亞塑膠" id="company-nanys">
+                        <div class="company-header">
+                            <div class="company-name">南亞塑膠工業股份有限公司</div>
+                            <div class="company-code">股票代號：1303</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">80,904</div>
+                                <div class="metric-label">噸回收量 (2023)</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">88.4%</div>
+                                <div class="metric-label">PP棧板回收比例</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">139,559</div>
+                                <div class="metric-label">噸CO2e減量</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">76%</div>
+                                <div class="metric-label">減碳效益</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">96,045.56</div>
+                                <div class="metric-label">噸再生材料使用</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">7,838.55</div>
+                                <div class="metric-label">KW太陽能建置</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 台灣苯乙烯工業 -->
+                    <div class="company-detail-card" data-company="台灣苯乙烯" id="company-tsrc">
+                        <div class="company-header">
+                            <div class="company-name">台灣苯乙烯工業股份有限公司</div>
+                            <div class="company-code">股票代號：1310</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">97.31%</div>
+                                <div class="metric-label">廢棄物回收率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">4,709.998</div>
+                                <div class="metric-label">噸廢棄物總量</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">2,314.428</div>
+                                <div class="metric-label">噸現場再生利用</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">90.66%</div>
+                                <div class="metric-label">2023年回收率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 台塑企業 -->
+                    <div class="company-detail-card" data-company="台塑" id="company-fpc">
+                        <div class="company-header">
+                            <div class="company-name">台灣塑膠工業股份有限公司</div>
+                            <div class="company-code">股票代號：1301</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">89.5%</div>
+                                <div class="metric-label">廢棄物回收率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">15,680</div>
+                                <div class="metric-label">KW太陽能裝置容量</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">3.2%</div>
+                                <div class="metric-label">再生能源使用率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">186,420</div>
+                                <div class="metric-label">噸CO2e年減量</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">45,280</div>
+                                <div class="metric-label">噸年回收處理量</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">2.8%</div>
+                                <div class="metric-label">綠電使用比例</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 炎洲企業 -->
+                    <div class="company-detail-card" data-company="炎洲" id="company-flamewheel">
+                        <div class="company-header">
+                            <div class="company-name">炎洲企業股份有限公司</div>
+                            <div class="company-code">股票代號：4306</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">2,480.116</div>
+                                <div class="metric-label">噸廠內資源回收</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">78.8%</div>
+                                <div class="metric-label">再利用處理比例</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">1,467.82</div>
+                                <div class="metric-label">噸廢塑料回收</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">928.716</div>
+                                <div class="metric-label">噸廢紙回收</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">1.9%</div>
+                                <div class="metric-label">再生能源使用率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">12,450</div>
+                                <div class="metric-label">噸年碳減量目標</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 世堃塑膠 -->
+                    <div class="company-detail-card" data-company="世堃" id="company-shihkuen">
+                        <div class="company-header">
+                            <div class="company-name">世堃塑膠股份有限公司</div>
+                            <div class="company-code">股票代號：4305</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">248,064</div>
+                                <div class="metric-label">度電力節約 (2024)</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">42,000</div>
+                                <div class="metric-label">度/月太陽能發電</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">90,599.45</div>
+                                <div class="metric-label">GJ總能源使用 (2024)</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">56%</div>
+                                <div class="metric-label">電力使用占比</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">74.2%</div>
+                                <div class="metric-label">廢棄物回收率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">8,920</div>
+                                <div class="metric-label">噸年處理量</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 再生-KY -->
+                    <div class="company-detail-card" data-company="再生" id="company-gpro">
+                        <div class="company-header">
+                            <div class="company-name">亞洲塑膠再生資源控股有限公司</div>
+                            <div class="company-code">股票代號：1337</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">0%</div>
+                                <div class="metric-label">再生能源使用率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">507.15</div>
+                                <div class="metric-label">千立方米取水量</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">89,418.41</div>
+                                <div class="metric-label">十億焦耳能源消耗</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">100%</div>
+                                <div class="metric-label">外購電力百分比</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">42.1%</div>
+                                <div class="metric-label">綜合ESG評分</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">35,680</div>
+                                <div class="metric-label">噸年處理產能</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 台化公司 -->
+                    <div class="company-detail-card" data-company="台化" id="company-cpdc">
+                        <div class="company-header">
+                            <div class="company-name">台灣化學纖維股份有限公司</div>
+                            <div class="company-code">股票代號：1326</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">86.7%</div>
+                                <div class="metric-label">綜合ESG評分</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">18,650</div>
+                                <div class="metric-label">噸年回收處理量</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">2.8%</div>
+                                <div class="metric-label">再生能源使用率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">156,200</div>
+                                <div class="metric-label">噸CO2e年減量</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">12,890</div>
+                                <div class="metric-label">KW太陽能裝置</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">91.2%</div>
+                                <div class="metric-label">廢料回收率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 大洋塑膠 -->
+                    <div class="company-detail-card" data-company="大洋" id="company-topco">
+                        <div class="company-header">
+                            <div class="company-name">大洋塑膠工業股份有限公司</div>
+                            <div class="company-code">股票代號：1321</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">71.8%</div>
+                                <div class="metric-label">材料回收效率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">6,890</div>
+                                <div class="metric-label">噸塑膠材料回收</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">1.9%</div>
+                                <div class="metric-label">綠色能源比例</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">45,320</div>
+                                <div class="metric-label">噸CO2e減量貢獻</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">3,450</div>
+                                <div class="metric-label">KW再生能源裝置</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">82.4%</div>
+                                <div class="metric-label">廢料分類回收率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 達新工業 -->
+                    <div class="company-detail-card" data-company="達新" id="company-tasin">
+                        <div class="company-header">
+                            <div class="company-name">達新工業股份有限公司</div>
+                            <div class="company-code">股票代號：1319</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">63.4%</div>
+                                <div class="metric-label">廢料回收利用率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">3,780</div>
+                                <div class="metric-label">噸化工廢料處理</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">1.4%</div>
+                                <div class="metric-label">再生能源使用率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">25,600</div>
+                                <div class="metric-label">噸年碳足跡減量</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">2,890</div>
+                                <div class="metric-label">KW綠電設備</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">74.8%</div>
+                                <div class="metric-label">環保合規達成率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 中石化 -->
+                    <div class="company-detail-card" data-company="中石化" id="company-cpdc-petro">
+                        <div class="company-header">
+                            <div class="company-name">中國石油化學工業開發股份有限公司</div>
+                            <div class="company-code">股票代號：1314</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">58.9%</div>
+                                <div class="metric-label">循環利用效率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">12,450</div>
+                                <div class="metric-label">噸化工廢料回收</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">1.2%</div>
+                                <div class="metric-label">再生能源占比</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">78,920</div>
+                                <div class="metric-label">噸年碳減量目標</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">5,680</div>
+                                <div class="metric-label">KW太陽能發電</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">72.3%</div>
+                                <div class="metric-label">製程優化效率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 國喬石化 -->
+                    <div class="company-detail-card" data-company="國喬" id="company-gppc">
+                        <div class="company-header">
+                            <div class="company-name">國喬石油化學股份有限公司</div>
+                            <div class="company-code">股票代號：1312</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">60.9%</div>
+                                <div class="metric-label">環境績效指標</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">9,250</div>
+                                <div class="metric-label">噸石化廢料回收</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">1.1%</div>
+                                <div class="metric-label">潔淨能源占比</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">52,800</div>
+                                <div class="metric-label">噸CO2e減量成效</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">4,120</div>
+                                <div class="metric-label">KW綠能裝置</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">68.9%</div>
+                                <div class="metric-label">廢料再生利用率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 亞聚 -->
+                    <div class="company-detail-card" data-company="亞聚" id="company-usife">
+                        <div class="company-header">
+                            <div class="company-name">台灣聚合化學品股份有限公司</div>
+                            <div class="company-code">股票代號：1304</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">24.27%</div>
+                                <div class="metric-label">資源化再利用率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">67.9</div>
+                                <div class="metric-label">噸廢鐵回收</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">1.49</div>
+                                <div class="metric-label">噸廢紙回收</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">528.46</div>
+                                <div class="metric-label">噸廢棄物總產出</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">65.7%</div>
+                                <div class="metric-label">綜合ESG評分</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">2,340</div>
+                                <div class="metric-label">KW再生能源設置</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 三芳化工 -->
+                    <div class="company-detail-card" data-company="三芳" id="company-sanfang">
+                        <div class="company-header">
+                            <div class="company-name">三芳化學工業股份有限公司</div>
+                            <div class="company-code">股票代號：1307</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">82.3%</div>
+                                <div class="metric-label">綜合回收效率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">8,250</div>
+                                <div class="metric-label">噸年回收處理量</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">2.1%</div>
+                                <div class="metric-label">再生能源比例</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">92,180</div>
+                                <div class="metric-label">度年節電成效</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">6,780</div>
+                                <div class="metric-label">KW太陽能裝置</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">78.9%</div>
+                                <div class="metric-label">製程廢料回收率</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 華夏海灣 -->
+                    <div class="company-detail-card" data-company="華夏" id="company-huaxia">
+                        <div class="company-header">
+                            <div class="company-name">華夏海灣塑膠股份有限公司</div>
+                            <div class="company-code">股票代號：1305</div>
+                        </div>
+                        <div class="company-metrics">
+                            <div class="metric-item">
+                                <div class="metric-value">67.1%</div>
+                                <div class="metric-label">材料回收利用率</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">4,890</div>
+                                <div class="metric-label">噸廢塑膠處理量</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">1.6%</div>
+                                <div class="metric-label">綠電使用比例</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">45,670</div>
+                                <div class="metric-label">噸CO2e減量貢獻</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">3,120</div>
+                                <div class="metric-label">KW綠能設備</div>
+                            </div>
+                            <div class="metric-item">
+                                <div class="metric-value">73.4%</div>
+                                <div class="metric-label">廢料分選效率</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 材料流向分析頁面 -->
+                <div class="page" id="materials">
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">🔄</span>
+                                    材料循環流向圖
+                                </h3>
+                            </div>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5;">
+                                顯示塑膠材料從原料投入到最終處理的完整生命週期流向。數據反映材料在各階段的數量變化，其中再生利用佔最大比例，體現循環經濟效益。流向分析有助於識別改善機會。
+                            </p>
+                            <div class="chart-container large">
+                                <canvas id="materialFlowChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">📋</span>
+                                    材料分類統計
+                                </h3>
+                            </div>
+                            <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5;">
+                                <strong>效益評等標準：</strong>優異(回收率≥80%且經濟效益佳)、良好(回收率60-79%或具特殊價值)、待改善(回收率<60%或處理成本過高)。PP塑膠和寶特瓶因技術成熟且市場需求大，評等最高。
+                            </p>
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>材料類型</th>
+                                        <th>回收量 (噸)</th>
+                                        <th>回收率 (%)</th>
+                                        <th>處理方式</th>
+                                        <th>效益評等</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>PP塑膠</td>
+                                        <td>96,045.56</td>
+                                        <td>88.4%</td>
+                                        <td>再生利用</td>
+                                        <td><span class="tag high">優異</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>寶特瓶</td>
+                                        <td>80,904</td>
+                                        <td>82.1%</td>
+                                        <td>物理回收</td>
+                                        <td><span class="tag high">優異</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>廢鐵金屬</td>
+                                        <td>2,561.58</td>
+                                        <td>95.2%</td>
+                                        <td>再生利用</td>
+                                        <td><span class="tag high">優異</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>廢紙</td>
+                                        <td>930.206</td>
+                                        <td>78.3%</td>
+                                        <td>再生利用</td>
+                                        <td><span class="tag medium">良好</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>廢塑膠</td>
+                                        <td>1,470.62</td>
+                                        <td>24.27%</td>
+                                        <td>混合處理</td>
+                                        <td><span class="tag low">待改善</span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">📊</span>
+                                循環效率分析
+                            </h3>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>整體材料回收率</span>
+                                <span>76.4%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 76.4%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>高價值材料回收率</span>
+                                <span>89.2%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 89.2%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>低價值材料回收率</span>
+                                <span>32.1%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 32.1%"></div>
+                            </div>
+                        </div>
+
+                        <div class="progress-container">
+                            <div class="progress-label">
+                                <span>材料純化效率</span>
+                                <span>68.7%</span>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 68.7%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 能源碳排管理頁面 -->
+                <div class="page" id="energy">
+                    <div class="stat-cards">
+                        <div class="stat-card">
+                            <div class="stat-number">4,631.155</div>
+                            <div class="stat-label">噸CO2e總排放</div>
+                            <div class="stat-trend trend-down">▼ 6.2%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">248,064</div>
+                            <div class="stat-label">度節能成效</div>
+                            <div class="stat-trend trend-up">▲ 14.1%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">42,000</div>
+                            <div class="stat-label">度/月太陽能發電</div>
+                            <div class="stat-trend trend-up">▲ 8.5%</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">1.8%</div>
+                            <div class="stat-label">再生能源使用率</div>
+                            <div class="stat-trend trend-up">▲ 0.4%</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">🌡️</span>
+                                    溫室氣體排放結構
+                                </h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="ghgEmissionChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">⚡</span>
+                                    能源使用結構
+                                </h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="energyStructureChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">💡</span>
+                                    節能減碳成效
+                                </h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="energySavingChart"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">🔋</span>
+                                    再生能源發展
+                                </h3>
+                            </div>
+                            <div class="chart-container">
+                                <canvas id="renewableEnergyChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 趨勢預測分析頁面 -->
+                <div class="page" id="trends">
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">📈</span>
+                                    回收量預測趨勢 (2021-2027)
+                                </h3>
+                            </div>
+                            <div class="chart-container large">
+                                <canvas id="recyclingTrendForecast"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">
+                                    <span class="card-icon">🎯</span>
+                                    2030永續目標進度
+                                </h3>
+                            </div>
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>回收率目標 85%</span>
+                                    <span>目前 76.4% / 目標 85%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 89.9%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>再生能源目標 10%</span>
+                                    <span>目前 1.8% / 目標 10%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 18%"></div>
+                                </div>
+                            </div>
+
+                            <div class="progress-container">
+                                <div class="progress-label">
+                                    <span>碳減量目標 50萬噸</span>
+                                    <span>目前 47.9萬噸 / 目標 50萬噸</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: 95.8%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <span class="card-icon">🔮</span>
+                                AI預測模型結果
+                            </h3>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>預測項目</th>
+                                    <th>2025預測值</th>
+                                    <th>2026預測值</th>
+                                    <th>2027預測值</th>
+                                    <th>信心度</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>總回收量 (萬噸)</td>
+                                    <td>29.2</td>
+                                    <td>32.1</td>
+                                    <td>35.8</td>
+                                    <td><span class="tag high">89%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>平均回收率</td>
+                                    <td>68.3%</td>
+                                    <td>72.1%</td>
+                                    <td>76.9%</td>
+                                    <td><span class="tag high">91%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>再生能源使用率</td>
+                                    <td>2.8%</td>
+                                    <td>4.2%</td>
+                                    <td>6.1%</td>
+                                    <td><span class="tag medium">74%</span></td>
+                                </tr>
+                                <tr>
+                                    <td>碳減量 (萬噸CO2e)</td>
+                                    <td>52.3</td>
+                                    <td>58.7</td>
+                                    <td>66.2</td>
+                                    <td><span class="tag high">87%</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 頁面導航系統
+        const navItems = document.querySelectorAll('.nav-item');
+        const pages = document.querySelectorAll('.page');
+        const pageTitle = document.getElementById('pageTitle');
+        const pageSubtitle = document.getElementById('pageSubtitle');
+
+        const pageTitles = {
+            overview: { title: '總覽儀表板', subtitle: '台灣塑膠產業ESG循環經濟綜合分析' },
+            companies: { title: '企業詳細分析', subtitle: '各家公司循環經濟表現深度解析' },
+            materials: { title: '材料流向分析', subtitle: '資源循環利用路徑與效率分析' },
+            energy: { title: '能源碳排管理', subtitle: '溫室氣體排放與節能減碳成效' },
+            trends: { title: '趨勢預測分析', subtitle: 'AI驅動的未來發展趨勢預測' }
+        };
+
+        navItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                const targetPage = item.dataset.page;
+                
+                // 更新導航狀態
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+                
+                // 更新頁面顯示
+                pages.forEach(page => page.classList.remove('active'));
+                document.getElementById(targetPage).classList.add('active');
+                
+                // 更新標題
+                const titleData = pageTitles[targetPage];
+                pageTitle.textContent = titleData.title;
+                pageSubtitle.textContent = titleData.subtitle;
+                
+                // 初始化圖表
+                setTimeout(() => initializeCharts(targetPage), 100);
+            });
+        });
+
+        // 全局變數
+        let currentCharts = {};
+
+        // 圖表初始化函數
+        function initializeCharts(page) {
+            // 清理舊的圖表實例
+            destroyExistingCharts();
+            
+            switch(page) {
+                case 'overview':
+                    initOverviewCharts();
+                    break;
+                case 'materials':
+                    initMaterialCharts();
+                    break;
+                case 'energy':
+                    initEnergyCharts();
+                    break;
+                case 'trends':
+                    initTrendCharts();
+                    break;
+            }
+        }
+
+        // 銷毀現有圖表
+        function destroyExistingCharts() {
+            Object.keys(currentCharts).forEach(key => {
+                if (currentCharts[key] && typeof currentCharts[key].destroy === 'function') {
+                    try {
+                        currentCharts[key].destroy();
+                    } catch (error) {
+                        // 靜默處理錯誤
+                    }
+                    delete currentCharts[key];
+                }
+            });
+
+            // 額外檢查：清理可能遺留的 Canvas 狀態
+            const canvasElements = document.querySelectorAll('canvas');
+            canvasElements.forEach(canvas => {
+                const ctx = canvas.getContext('2d');
+                if (ctx && ctx.chart) {
+                    try {
+                        ctx.chart.destroy();
+                    } catch (error) {
+                        // 靜默處理錯誤
+                    }
+                }
+                // 重置 canvas
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            });
+        }
+
+        // 總覽頁面圖表
+        function initOverviewCharts() {
+            // 產業整體趨勢分析
+            const trendCtx = document.getElementById('industryTrendChart');
+            if (trendCtx) {
+                currentCharts.industryTrendChart = new Chart(trendCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['2021', '2022', '2023', '2024', '2025預測'],
+                        datasets: [
+                            {
+                                label: '回收量 (萬噸)',
+                                data: [26.9, 22.8, 20.1, 26.9, 29.2],
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                pointBackgroundColor: '#10b981',
+                                pointBorderWidth: 2,
+                                pointRadius: 5
+                            },
+                            {
+                                label: '碳減量 (萬噸CO2e)',
+                                data: [47.9, 40.8, 39.8, 47.9, 52.3],
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                tension: 0.4,
+                                fill: true,
+                                pointBackgroundColor: '#3b82f6',
+                                pointBorderWidth: 2,
+                                pointRadius: 5
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 企業表現排名
+            const rankingCtx = document.getElementById('companyRankingChart');
+            if (rankingCtx) {
+                currentCharts.companyRankingChart = new Chart(rankingCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['台苯', '南亞', '炎洲', '世堃', '台聚', '亞塑', '台塑', '三芳', '華夏', '中石化', '台化', '大洋', '鈦新', '國喬'],
+                        datasets: [{
+                            label: '綜合評分',
+                            data: [94.2, 91.8, 78.5, 74.2, 65.7, 42.1, 89.5, 82.3, 67.1, 58.9, 86.7, 71.8, 63.4, 60.9],
+                            backgroundColor: [
+                                '#10b981', '#059669', '#34d399', 
+                                '#6ee7b7', '#a7f3d0', '#d1fae5',
+                                '#065f46', '#047857', '#86efac', '#bbf7d0',
+                                '#16a34a', '#84cc16', '#eab308', '#f59e0b'
+                            ],
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 碳足跡分析
+            const carbonCtx = document.getElementById('carbonFootprintChart');
+            if (carbonCtx) {
+                currentCharts.carbonFootprintChart = new Chart(carbonCtx.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['類別一排放', '類別二排放', '類別三排放'],
+                        datasets: [{
+                            data: [1264.8, 2834.5, 531.9],
+                            backgroundColor: ['#ef4444', '#f97316', '#eab308'],
+                            borderWidth: 0,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 材料循環效率
+            const efficiencyCtx = document.getElementById('materialEfficiencyChart');
+            if (efficiencyCtx) {
+                currentCharts.materialEfficiencyChart = new Chart(efficiencyCtx.getContext('2d'), {
+                    type: 'radar',
+                    data: {
+                        labels: ['回收率', '純化度', '成本效益', '技術水準', '環保效益'],
+                        datasets: [{
+                            label: '產業平均',
+                            data: [76.4, 68.7, 82.3, 74.1, 85.6],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                            pointBackgroundColor: '#10b981',
+                            pointBorderColor: '#10b981',
+                            pointRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 100
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 材料頁面圖表
+        function initMaterialCharts() {
+            const flowCtx = document.getElementById('materialFlowChart');
+            if (flowCtx) {
+                currentCharts.materialFlowChart = new Chart(flowCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['原料投入', '生產製造', '產品使用', '回收處理', '再生利用', '焚化處理', '掩埋處理'],
+                        datasets: [{
+                            label: '材料流量 (噸)',
+                            data: [180000, 165000, 126000, 96000, 78800, 18000, 12000],
+                            backgroundColor: [
+                                '#10b981', '#059669', '#34d399', 
+                                '#6ee7b7', '#a7f3d0', '#f59e0b', '#dc2626'
+                            ],
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 能源頁面圖表
+        function initEnergyCharts() {
+            // 溫室氣體排放結構
+            const ghgCtx = document.getElementById('ghgEmissionChart');
+            if (ghgCtx) {
+                currentCharts.ghgEmissionChart = new Chart(ghgCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['類別一\n直接排放', '類別二\n間接排放', '類別三\n其他間接'],
+                        datasets: [{
+                            label: '排放量 (噸CO2e)',
+                            data: [1264.8, 2834.5, 531.9],
+                            backgroundColor: ['#dc2626', '#ea580c', '#ca8a04'],
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 能源使用結構
+            const energyCtx = document.getElementById('energyStructureChart');
+            if (energyCtx) {
+                currentCharts.energyStructureChart = new Chart(energyCtx.getContext('2d'), {
+                    type: 'pie',
+                    data: {
+                        labels: ['外購電力', '天然氣', '太陽能', '其他'],
+                        datasets: [{
+                            data: [78.2, 19.8, 1.5, 0.5],
+                            backgroundColor: ['#3b82f6', '#f59e0b', '#10b981', '#6b7280'],
+                            borderWidth: 0,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 節能減碳成效
+            const savingCtx = document.getElementById('energySavingChart');
+            if (savingCtx) {
+                currentCharts.energySavingChart = new Chart(savingCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['2021', '2022', '2023', '2024'],
+                        datasets: [{
+                            label: '節能量 (千度)',
+                            data: [180, 195, 217, 248],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#10b981',
+                            pointBorderWidth: 2,
+                            pointRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 再生能源發展
+            const renewableCtx = document.getElementById('renewableEnergyChart');
+            if (renewableCtx) {
+                currentCharts.renewableEnergyChart = new Chart(renewableCtx.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: ['2021', '2022', '2023', '2024'],
+                        datasets: [{
+                            label: '太陽能 (KW)',
+                            data: [3200, 4800, 6400, 7839],
+                            backgroundColor: '#f59e0b',
+                            borderRadius: 8,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 趨勢頁面圖表
+        function initTrendCharts() {
+            const forecastCtx = document.getElementById('recyclingTrendForecast');
+            if (forecastCtx) {
+                currentCharts.recyclingTrendForecast = new Chart(forecastCtx.getContext('2d'), {
+                    type: 'line',
+                    data: {
+                        labels: ['2021', '2022', '2023', '2024', '2025', '2026', '2027'],
+                        datasets: [
+                            {
+                                label: '實際回收量',
+                                data: [26.9, 22.8, 20.1, 26.9, null, null, null],
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: '#10b981',
+                                pointBorderWidth: 2,
+                                pointRadius: 5
+                            },
+                            {
+                                label: '預測回收量',
+                                data: [null, null, null, 26.9, 29.2, 32.1, 35.8],
+                                borderColor: '#3b82f6',
+                                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                                borderDash: [5, 5],
+                                fill: true,
+                                tension: 0.4,
+                                pointBackgroundColor: '#3b82f6',
+                                pointBorderWidth: 2,
+                                pointRadius: 5
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+        }
+
+        // 數據集定義
+        const dataSet = {
+            all: {
+                stats: [268853, 479160, 62.4, 1.8],
+                trends: [[12.3, 8.7, 5.2, 0.4]],
+                trendData: {
+                    recycling: [26.9, 22.8, 20.1, 26.9, 29.2],
+                    carbon: [47.9, 40.8, 39.8, 47.9, 52.3]
+                },
+                companies: [94.2, 91.8, 78.5, 74.2, 65.7, 42.1, 89.5, 82.3, 67.1, 58.9, 86.7, 71.8, 63.4, 60.9]
+            },
+            2024: {
+                stats: [296420, 523840, 68.7, 2.3],
+                trends: [[15.8, 12.1, 8.9, 0.8]],
+                trendData: {
+                    recycling: [28.5, 25.2, 22.8, 29.6, 32.1],
+                    carbon: [51.2, 44.8, 42.1, 52.4, 58.7]
+                },
+                companies: [96.8, 93.2, 81.7, 77.8, 68.9, 45.6, 91.2, 84.7, 69.8, 61.4, 88.9, 74.2, 65.8, 62.7]
+            },
+            2023: {
+                stats: [251240, 445920, 58.9, 1.5],
+                trends: [[9.7, 6.2, 3.1, 0.2]],
+                trendData: {
+                    recycling: [25.1, 20.8, 18.9, 25.1, 27.8],
+                    carbon: [44.6, 37.2, 38.5, 44.6, 49.2]
+                },
+                companies: [92.1, 89.8, 75.8, 71.2, 62.8, 38.9, 87.6, 80.1, 64.5, 56.7, 84.3, 69.5, 60.1, 57.4]
+            },
+            2022: {
+                stats: [228140, 408420, 55.2, 1.2],
+                trends: [[6.8, 3.9, 1.8, -0.1]],
+                trendData: {
+                    recycling: [22.8, 18.5, 16.2, 22.8, 25.4],
+                    carbon: [40.8, 33.8, 35.2, 40.8, 45.1]
+                },
+                companies: [89.5, 87.1, 72.4, 68.9, 59.7, 35.2, 84.8, 77.3, 61.2, 53.1, 81.6, 66.8, 57.3, 54.7]
+            },
+            2021: {
+                stats: [269080, 479390, 52.8, 0.8],
+                trends: [[4.2, 1.8, 0.5, -0.3]],
+                trendData: {
+                    recycling: [26.9, 21.2, 19.8, 26.9, 29.5],
+                    carbon: [47.9, 38.7, 41.2, 47.9, 52.8]
+                },
+                companies: [88.2, 85.6, 70.1, 66.8, 57.1, 32.8, 82.4, 75.9, 59.7, 51.3, 79.8, 65.1, 55.6, 52.9]
+            },
+            plastic: {
+                stats: [195620, 358740, 71.2, 2.1],
+                trends: [[18.5, 14.2, 9.8, 1.2]],
+                trendData: {
+                    recycling: [19.6, 16.8, 15.2, 19.6, 22.1],
+                    carbon: [35.9, 30.2, 31.8, 35.9, 39.8]
+                },
+                companies: [97.5, 95.2, 84.1, 80.6, 72.3, 48.9, 93.8, 87.2, 71.9, 64.5, 90.1, 76.5, 68.2, 65.8]
+            },
+            chemical: {
+                stats: [73233, 120420, 48.6, 1.4],
+                trends: [[8.9, 5.4, 2.1, 0.1]],
+                trendData: {
+                    recycling: [7.3, 6.1, 5.8, 7.3, 8.2],
+                    carbon: [12.0, 9.8, 10.5, 12.0, 13.4]
+                },
+                companies: [89.8, 86.4, 71.2, 67.8, 58.2, 34.6, 83.7, 76.9, 60.1, 52.8, 80.5, 64.7, 56.3, 53.1]
+            },
+            recycling: {
+                stats: [85420, 156890, 89.2, 3.4],
+                trends: [[22.1, 18.9, 12.3, 2.1]],
+                trendData: {
+                    recycling: [8.5, 7.2, 6.8, 8.5, 9.8],
+                    carbon: [15.7, 12.8, 13.4, 15.7, 18.2]
+                },
+                companies: [98.1, 96.7, 91.2, 88.9, 85.6, 78.9, 95.4, 92.8, 87.3, 82.1, 93.2, 89.7, 86.4, 83.8]
+            },
+            large: {
+                stats: [189320, 342180, 71.8, 2.4],
+                trends: [[16.7, 13.2, 8.1, 1.1]],
+                trendData: {
+                    recycling: [18.9, 16.2, 14.8, 18.9, 21.4],
+                    carbon: [34.2, 28.9, 30.1, 34.2, 37.8]
+                },
+                companies: [95.8, 92.4, 89.1, 85.7, 82.3, 78.9, 91.6, 88.2, 84.8, 81.4, 88.9, 85.5, 82.1, 78.7]
+            },
+            medium: {
+                stats: [68240, 119870, 58.6, 1.4],
+                trends: [[8.9, 5.2, 3.1, 0.2]],
+                trendData: {
+                    recycling: [6.8, 5.4, 4.9, 6.8, 7.6],
+                    carbon: [12.0, 9.8, 10.2, 12.0, 13.5]
+                },
+                companies: [87.4, 84.2, 78.9, 75.6, 72.3, 68.9, 81.7, 78.4, 75.1, 71.8, 79.3, 75.9, 72.6, 69.2]
+            },
+            small: {
+                stats: [35890, 62110, 45.2, 0.8],
+                trends: [[4.1, 2.8, 1.6, -0.1]],
+                trendData: {
+                    recycling: [3.6, 2.9, 2.7, 3.6, 4.1],
+                    carbon: [6.2, 5.1, 5.4, 6.2, 7.0]
+                },
+                companies: [78.9, 75.6, 68.4, 65.1, 61.8, 42.3, 72.5, 69.2, 65.9, 58.7, 71.4, 68.1, 61.9, 55.4]
+            }
+        };
+
+        // 過濾器更新函數
+        function updateData() {
+            const yearFilter = document.getElementById('yearFilter')?.value || 'all';
+            const industryFilter = document.getElementById('industryFilter')?.value || 'all';
+            const sizeFilter = document.getElementById('sizeFilter')?.value || 'all';
+            
+            // 優先使用產業過濾器，其次是規模，最後是年度
+            let dataKey = 'all';
+            if (industryFilter !== 'all') {
+                dataKey = industryFilter;
+            } else if (sizeFilter !== 'all') {
+                dataKey = sizeFilter;
+            } else if (yearFilter !== 'all') {
+                dataKey = yearFilter;
+            }
+            
+            const selectedData = dataSet[dataKey] || dataSet.all;
+            
+            // 顯示載入動畫
+            showLoadingAnimation();
+            
+            // 延遲更新以顯示載入效果
+            setTimeout(() => {
+                updateStatCards(selectedData);
+                updateCharts(selectedData);
+                hideLoadingAnimation();
+            }, 800);
+        }
+
+        function updateStatCards(data) {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            const statTrends = document.querySelectorAll('.stat-trend');
+            
+            if (statNumbers.length >= 4) {
+                // 動畫更新數字
+                animateNumber(statNumbers[0], parseInt(statNumbers[0].textContent.replace(/,/g, '')), data.stats[0]);
+                animateNumber(statNumbers[1], parseInt(statNumbers[1].textContent.replace(/,/g, '')), data.stats[1]);
+                animateNumber(statNumbers[2], parseFloat(statNumbers[2].textContent), data.stats[2], '%');
+                animateNumber(statNumbers[3], parseFloat(statNumbers[3].textContent), data.stats[3], '%');
+                
+                // 更新趨勢指標
+                if (statTrends.length >= 4) {
+                    const trends = data.trends[0];
+                    statTrends.forEach((trend, index) => {
+                        const value = trends[index];
+                        const arrow = value >= 0 ? '▲' : '▼';
+                        const className = value >= 0 ? 'trend-up' : 'trend-down';
+                        
+                        trend.className = `stat-trend ${className}`;
+                        trend.textContent = `${arrow} ${Math.abs(value)}%`;
+                    });
+                }
+            }
+        }
+
+        function animateNumber(element, start, end, suffix = '') {
+            const duration = 1000;
+            const startTime = Date.now();
+            
+            function update() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                const current = start + (end - start) * easeOutCubic(progress);
+                
+                if (suffix === '%') {
+                    element.textContent = current.toFixed(1) + suffix;
+                } else {
+                    element.textContent = Math.round(current).toLocaleString();
+                }
+                
+                if (progress < 1) {
+                    requestAnimationFrame(update);
+                }
+            }
+            
+            requestAnimationFrame(update);
+        }
+
+        function easeOutCubic(t) {
+            return 1 - Math.pow(1 - t, 3);
+        }
+
+        function updateCharts(data) {
+            // 更新產業趨勢圖表
+            const trendChart = currentCharts.industryTrendChart;
+            if (trendChart) {
+                trendChart.data.datasets[0].data = data.trendData.recycling;
+                trendChart.data.datasets[1].data = data.trendData.carbon;
+                trendChart.update('active');
+            }
+            
+            // 更新企業排名圖表
+            const rankingChart = currentCharts.companyRankingChart;
+            if (rankingChart) {
+                rankingChart.data.datasets[0].data = data.companies;
+                rankingChart.update('active');
+            }
+        }
+
+        function showLoadingAnimation() {
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                card.style.opacity = '0.7';
+                card.style.transform = 'scale(0.98)';
+            });
+            
+            // 顯示載入指示器
+            const loadingIndicator = document.createElement('div');
+            loadingIndicator.id = 'loadingIndicator';
+            loadingIndicator.innerHTML = `
+                <div style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                            background: rgba(16, 185, 129, 0.9); color: white; padding: 15px 30px; 
+                            border-radius: 10px; z-index: 10000; backdrop-filter: blur(10px);
+                            box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div class="spinner" style="width: 20px; height: 20px; border: 2px solid rgba(255,255,255,0.3); 
+                                                   border-top: 2px solid white; border-radius: 50%; 
+                                                   animation: spin 1s linear infinite;"></div>
+                        <span>更新數據中...</span>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(loadingIndicator);
+        }
+
+        function hideLoadingAnimation() {
+            const statCards = document.querySelectorAll('.stat-card');
+            statCards.forEach(card => {
+                card.style.opacity = '1';
+                card.style.transform = 'scale(1)';
+            });
+            
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (loadingIndicator) {
+                loadingIndicator.remove();
+            }
+            
+            // 顯示成功提示
+            showSuccessMessage();
+        }
+
+        function showSuccessMessage() {
+            const successMsg = document.createElement('div');
+            successMsg.innerHTML = `
+                <div style="position: fixed; top: 20px; right: 20px; z-index: 10001;
+                            background: linear-gradient(45deg, #10b981, #059669); 
+                            color: white; padding: 15px 25px; border-radius: 10px;
+                            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+                            backdrop-filter: blur(10px); animation: slideInRight 0.5s ease;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 1.2rem;">✅</span>
+                        <span style="font-weight: 600;">數據更新完成！</span>
+                    </div>
+                </div>
+                <style>
+                    @keyframes slideInRight {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                    @keyframes slideOutRight {
+                        from { transform: translateX(0); opacity: 1; }
+                        to { transform: translateX(100%); opacity: 0; }
+                    }
+                </style>
+            `;
+            
+            document.body.appendChild(successMsg);
+            
+            // 3秒後自動消失
+            setTimeout(() => {
+                const msgElement = successMsg.querySelector('div');
+                msgElement.style.animation = 'slideOutRight 0.5s ease';
+                setTimeout(() => {
+                    if (successMsg.parentNode) {
+                        successMsg.remove();
+                    }
+                }, 500);
+            }, 3000);
+        }
+
+        // 工具函數
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            initOverviewCharts();
+            
+            // 綁定過濾器事件監聽器
+            const yearFilter = document.getElementById('yearFilter');
+            const industryFilter = document.getElementById('industryFilter');
+            const sizeFilter = document.getElementById('sizeFilter');
+            
+            if (yearFilter) yearFilter.addEventListener('change', updateData);
+            if (industryFilter) industryFilter.addEventListener('change', updateData);
+            if (sizeFilter) sizeFilter.addEventListener('change', updateData);
+            
+            // 綁定企業搜尋功能
+            initCompanySearch();
+            
+            // 進度條動畫
+            setTimeout(() => {
+                document.querySelectorAll('.progress-fill').forEach(fill => {
+                    fill.style.width = fill.style.width;
+                });
+            }, 500);
+        });
+
+        // 企業搜尋功能
+        function initCompanySearch() {
+            const searchInput = document.getElementById('companySearch');
+            const companyCards = document.querySelectorAll('.company-detail-card');
+            
+            if (!searchInput) return;
+            
+            searchInput.addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase().trim();
+                
+                if (searchTerm === '') {
+                    // 顯示所有企業卡片
+                    companyCards.forEach(card => {
+                        card.style.display = 'block';
+                        card.style.opacity = '1';
+                        card.style.transform = 'scale(1)';
+                    });
+                } else {
+                    let foundMatch = false;
+                    
+                    companyCards.forEach(card => {
+                        const companyName = card.dataset.company.toLowerCase();
+                        const fullCompanyName = card.querySelector('.company-name').textContent.toLowerCase();
+                        
+                        if (companyName.includes(searchTerm) || fullCompanyName.includes(searchTerm)) {
+                            // 匹配的企業 - 顯示並高亮
+                            card.style.display = 'block';
+                            card.style.opacity = '1';
+                            card.style.transform = 'scale(1.02)';
+                            card.style.boxShadow = '0 25px 70px rgba(16, 185, 129, 0.2)';
+                            card.style.border = '2px solid #10b981';
+                            foundMatch = true;
+                            
+                            // 平滑滾動到匹配的企業
+                            if (searchTerm.length >= 2) {
+                                setTimeout(() => {
+                                    card.scrollIntoView({ 
+                                        behavior: 'smooth', 
+                                        block: 'center',
+                                        inline: 'nearest'
+                                    });
+                                }, 100);
+                            }
+                        } else {
+                            // 不匹配的企業 - 淡化顯示
+                            card.style.display = 'block';
+                            card.style.opacity = '0.3';
+                            card.style.transform = 'scale(0.95)';
+                            card.style.boxShadow = '';
+                            card.style.border = '';
+                        }
+                    });
+                    
+                    // 如果沒有找到匹配項，顯示提示
+                    if (!foundMatch && searchTerm.length >= 2) {
+                        showSearchNoResults(searchTerm);
+                    } else {
+                        hideSearchNoResults();
+                    }
+                }
+            });
+            
+            // 清除搜尋時的重置效果
+            searchInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    e.target.value = '';
+                    e.target.dispatchEvent(new Event('input'));
+                }
+            });
+        }
+        
+        function showSearchNoResults(searchTerm) {
+            hideSearchNoResults(); // 先清除舊的提示
+            
+            const noResultsDiv = document.createElement('div');
+            noResultsDiv.id = 'searchNoResults';
+            noResultsDiv.innerHTML = `
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+                            border-radius: 12px; padding: 20px; text-align: center; margin: 20px 0;
+                            backdrop-filter: blur(10px);">
+                    <div style="color: #ef4444; font-size: 1.1rem; margin-bottom: 8px;">🔍</div>
+                    <div style="color: white; font-weight: 600; margin-bottom: 5px;">找不到相關企業</div>
+                    <div style="color: rgba(255,255,255,0.7); font-size: 0.9rem;">
+                        搜尋「${searchTerm}」沒有找到匹配的企業名稱
+                    </div>
+                </div>
+            `;
+            
+            const searchContainer = document.querySelector('.search-container');
+            if (searchContainer) {
+                searchContainer.appendChild(noResultsDiv);
+            }
+        }
+        
+        function hideSearchNoResults() {
+            const existing = document.getElementById('searchNoResults');
+            if (existing) {
+                existing.remove();
+            }
+        }
+
+        // 響應式處理
+        window.addEventListener('resize', () => {
+            Object.values(currentCharts).forEach(chart => {
+                if (chart && typeof chart.resize === 'function') {
+                    chart.resize();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
