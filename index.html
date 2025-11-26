@@ -2032,7 +2032,7 @@
             }
 
             // 企業表現排名
-            const rankingCtx = document.getElementById('companyRankingChart');
+            /*const rankingCtx = document.getElementById('companyRankingChart');
             if (rankingCtx) {
                 currentCharts.companyRankingChart = new Chart(rankingCtx.getContext('2d'), {
                     type: 'bar',
@@ -2068,6 +2068,7 @@
                     }
                 });
             }
+            */
 
             // 碳足跡分析
             const carbonCtx = document.getElementById('carbonFootprintChart');
@@ -2335,7 +2336,7 @@
                         labels: ['2021', '2022', '2023', '2024', '2025', '2026', '2027'],
                         datasets: [
                             {
-                                label: '實際回收量',
+                                label: '實際回收量(萬噸)',
                                 data: [26.9, 22.8, 20.1, 26.9, null, null, null],
                                 borderColor: '#10b981',
                                 backgroundColor: 'rgba(16, 185, 129, 0.1)',
@@ -2346,7 +2347,7 @@
                                 pointRadius: 5
                             },
                             {
-                                label: '預測回收量',
+                                label: '預測回收量(萬噸)',
                                 data: [null, null, null, 26.9, 29.2, 32.1, 35.8],
                                 borderColor: '#3b82f6',
                                 backgroundColor: 'rgba(59, 130, 246, 0.1)',
