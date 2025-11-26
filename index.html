@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,10 +23,23 @@
         }
 
         @keyframes gradientFlow {
-            0%, 100% { background-position: 0% 50%; }
-            25% { background-position: 100% 50%; }
-            50% { background-position: 100% 100%; }
-            75% { background-position: 0% 100%; }
+
+            0%,
+            100% {
+                background-position: 0% 50%;
+            }
+
+            25% {
+                background-position: 100% 50%;
+            }
+
+            50% {
+                background-position: 100% 100%;
+            }
+
+            75% {
+                background-position: 0% 100%;
+            }
         }
 
         .app-container {
@@ -181,6 +195,7 @@
                 opacity: 0;
                 transform: translateY(20px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -487,13 +502,18 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
             animation: shimmer 2s infinite;
         }
 
         @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
+            0% {
+                transform: translateX(-100%);
+            }
+
+            100% {
+                transform: translateX(100%);
+            }
         }
 
         /* 標籤系統 */
@@ -560,7 +580,7 @@
             .dashboard-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .stat-cards {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -570,27 +590,27 @@
             .sidebar {
                 transform: translateX(-100%);
             }
-            
+
             .sidebar.mobile-open {
                 transform: translateX(0);
             }
-            
+
             .main-content {
                 margin-left: 0;
             }
-            
+
             .stat-cards {
                 grid-template-columns: 1fr;
             }
-            
+
             .company-metrics {
                 grid-template-columns: 1fr;
             }
-            
+
             .top-bar {
                 padding: 15px 20px;
             }
-            
+
             .page-content {
                 padding: 20px;
             }
@@ -614,8 +634,13 @@
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
 
         /* 提示工具 */
@@ -647,6 +672,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="app-container">
         <!-- 側邊導航 -->
@@ -655,7 +681,7 @@
                 <div class="logo">♻️ ESG Analytics</div>
                 <div class="logo-subtitle">循環經濟分析平台</div>
             </div>
-            
+
             <div class="nav-menu">
                 <div class="nav-item active" data-page="overview">
                     <span class="nav-icon">📊</span>
@@ -688,7 +714,7 @@
                     <h1 class="page-title" id="pageTitle">總覽儀表板</h1>
                     <p class="page-subtitle" id="pageSubtitle">台灣塑膠產業ESG循環經濟綜合分析</p>
                 </div>
-                
+
                 <div class="top-controls">
                     <button class="control-btn" onclick="toggleFullscreen()">⛶ 全螢幕</button>
                 </div>
@@ -816,6 +842,54 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- 網頁底部資訊 -->
+                    <footer class="dashboard-footer"
+                        style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); padding: 40px 0; margin-top: 50px; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+                        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 30px;">
+                            <div class="footer-content" style="text-align: center; color: #94a3b8;">
+                                <h4 style="color: #10b981; font-size: 1.2rem; margin-bottom: 20px;">關於本儀表板</h4>
+
+                                <div class="footer-info-grid"
+                                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px; text-align: left;">
+                                    <div class="footer-info-item">
+                                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">📊
+                                            數據資料來源</strong>
+                                        <p style="line-height: 1.6; font-size: 0.9rem;">
+                                            本儀表板所有數據均來自各上市公司公開發布之ESG永續報告書，並經系統化提取與驗證。</p>
+                                    </div>
+
+                                    <div class="footer-info-item">
+                                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">💰
+                                            計畫補助</strong>
+                                        <p style="line-height: 1.6; font-size: 0.9rem;">本系統由環境部資源循環署「資源循環創新及研究發展計畫」補助開發。
+                                        </p>
+                                    </div>
+
+                                    <div class="footer-info-item">
+                                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">🏢
+                                            執行單位</strong>
+                                        <p style="line-height: 1.6; font-size: 0.9rem;">
+                                            財團法人商業發展研究院（主辦）<br>國立臺灣大學資訊工程學系（技術協力）</p>
+                                    </div>
+
+                                    <div class="footer-info-item">
+                                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">🔄
+                                            更新頻率</strong>
+                                        <p style="line-height: 1.6; font-size: 0.9rem;">每季更新，配合上市公司ESG報告發布時程</p>
+                                    </div>
+                                </div>
+
+                                <div class="footer-divider"
+                                    style="height: 1px; background: rgba(148, 163, 184, 0.2); margin: 30px auto; max-width: 600px;">
+                                </div>
+
+                                <!--div class="footer-bottom" style="font-size: 0.85rem; color: #64748b;">
+                    <p>© 2024 台灣塑膠產業ESG循環經濟智能分析平台 | 版權所有</p>
+                </div-->
+                            </div>
+                        </div>
+                    </footer>
                 </div>
 
                 <!-- 企業詳細分析頁面 -->
@@ -823,13 +897,13 @@
                     <!-- 搜尋功能 -->
                     <div class="search-container" style="margin-bottom: 30px;">
                         <div style="position: relative; max-width: 500px;">
-                            <input type="text" id="companySearch" placeholder="搜尋企業名稱..." 
-                                   style="width: 100%; padding: 15px 50px 15px 20px; 
+                            <input type="text" id="companySearch" placeholder="搜尋企業名稱..." style="width: 100%; padding: 15px 50px 15px 20px; 
                                           border: 2px solid rgba(255,255,255,0.3); 
                                           border-radius: 12px; background: rgba(255,255,255,0.1); 
                                           color: white; font-size: 1rem; backdrop-filter: blur(10px);">
                             <div style="position: absolute; right: 15px; top: 50%; transform: translateY(-50%); 
-                                        color: rgba(255,255,255,0.7); font-size: 1.2rem; pointer-events: none;">🔍</div>
+                                        color: rgba(255,255,255,0.7); font-size: 1.2rem; pointer-events: none;">🔍
+                            </div>
                         </div>
                     </div>
 
@@ -1328,56 +1402,56 @@
                                 </h3>
                             </div>
                             <p style="color: #6b7280; font-size: 0.9rem; margin-bottom: 15px; line-height: 1.5;">
-                                <strong>效益評等標準：</strong>優異(回收率≥80%且經濟效益佳)、良好(回收率60-79%或具特殊價值)、待改善(回收率<60%或處理成本過高)。PP塑膠和寶特瓶因技術成熟且市場需求大，評等最高。
-                            </p>
-                            <table class="data-table">
-                                <thead>
-                                    <tr>
-                                        <th>材料類型</th>
-                                        <th>回收量 (噸)</th>
-                                        <th>回收率 (%)</th>
-                                        <th>處理方式</th>
-                                        <th>效益評等</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>PP塑膠</td>
-                                        <td>96,045.56</td>
-                                        <td>88.4%</td>
-                                        <td>再生利用</td>
-                                        <td><span class="tag high">優異</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>寶特瓶</td>
-                                        <td>80,904</td>
-                                        <td>82.1%</td>
-                                        <td>物理回收</td>
-                                        <td><span class="tag high">優異</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>廢鐵金屬</td>
-                                        <td>2,561.58</td>
-                                        <td>95.2%</td>
-                                        <td>再生利用</td>
-                                        <td><span class="tag high">優異</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>廢紙</td>
-                                        <td>930.206</td>
-                                        <td>78.3%</td>
-                                        <td>再生利用</td>
-                                        <td><span class="tag medium">良好</span></td>
-                                    </tr>
-                                    <tr>
-                                        <td>廢塑膠</td>
-                                        <td>1,470.62</td>
-                                        <td>24.27%</td>
-                                        <td>混合處理</td>
-                                        <td><span class="tag low">待改善</span></td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                <strong>效益評等標準：</strong>優異(回收率≥80%且經濟效益佳)、良好(回收率60-79%或具特殊價值)、待改善(回收率
+                                <60%或處理成本過高)。PP塑膠和寶特瓶因技術成熟且市場需求大，評等最高。 </p>
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>材料類型</th>
+                                                <th>回收量 (噸)</th>
+                                                <th>回收率 (%)</th>
+                                                <th>處理方式</th>
+                                                <th>效益評等</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>PP塑膠</td>
+                                                <td>96,045.56</td>
+                                                <td>88.4%</td>
+                                                <td>再生利用</td>
+                                                <td><span class="tag high">優異</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>寶特瓶</td>
+                                                <td>80,904</td>
+                                                <td>82.1%</td>
+                                                <td>物理回收</td>
+                                                <td><span class="tag high">優異</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>廢鐵金屬</td>
+                                                <td>2,561.58</td>
+                                                <td>95.2%</td>
+                                                <td>再生利用</td>
+                                                <td><span class="tag high">優異</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>廢紙</td>
+                                                <td>930.206</td>
+                                                <td>78.3%</td>
+                                                <td>再生利用</td>
+                                                <td><span class="tag medium">良好</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>廢塑膠</td>
+                                                <td>1,470.62</td>
+                                                <td>24.27%</td>
+                                                <td>混合處理</td>
+                                                <td><span class="tag low">待改善</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                         </div>
                     </div>
 
@@ -1537,7 +1611,7 @@
                                     <div class="progress-fill" style="width: 89.9%"></div>
                                 </div>
                             </div>
-                            
+
                             <div class="progress-container">
                                 <div class="progress-label">
                                     <span>再生能源目標 10%</span>
@@ -1637,20 +1711,20 @@
         navItems.forEach(item => {
             item.addEventListener('click', (e) => {
                 const targetPage = item.dataset.page;
-                
+
                 // 更新導航狀態
                 navItems.forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
-                
+
                 // 更新頁面顯示
                 pages.forEach(page => page.classList.remove('active'));
                 document.getElementById(targetPage).classList.add('active');
-                
+
                 // 更新標題
                 const titleData = pageTitles[targetPage];
                 pageTitle.textContent = titleData.title;
                 pageSubtitle.textContent = titleData.subtitle;
-                
+
                 // 初始化圖表
                 setTimeout(() => initializeCharts(targetPage), 100);
             });
@@ -1663,8 +1737,8 @@
         function initializeCharts(page) {
             // 清理舊的圖表實例
             destroyExistingCharts();
-            
-            switch(page) {
+
+            switch (page) {
                 case 'overview':
                     initOverviewCharts();
                     break;
@@ -1771,7 +1845,7 @@
                             label: '綜合評分',
                             data: [94.2, 91.8, 78.5, 74.2, 65.7, 42.1, 89.5, 82.3, 67.1, 58.9, 86.7, 71.8, 63.4, 60.9],
                             backgroundColor: [
-                                '#10b981', '#059669', '#34d399', 
+                                '#10b981', '#059669', '#34d399',
                                 '#6ee7b7', '#a7f3d0', '#d1fae5',
                                 '#065f46', '#047857', '#86efac', '#bbf7d0',
                                 '#16a34a', '#84cc16', '#eab308', '#f59e0b'
@@ -1821,7 +1895,7 @@
                             },
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                         const percentage = ((context.raw / total) * 100).toFixed(1);
                                         return `${context.label}: ${context.formattedValue} 噸CO2e / 總量 ${total.toLocaleString()} 噸CO2e (${percentage}%)`;
@@ -1881,7 +1955,7 @@
                             label: '材料流量 (噸)',
                             data: [180000, 165000, 126000, 96000, 78800, 18000, 12000],
                             backgroundColor: [
-                                '#10b981', '#059669', '#34d399', 
+                                '#10b981', '#059669', '#34d399',
                                 '#6ee7b7', '#a7f3d0', '#f59e0b', '#dc2626'
                             ],
                             borderRadius: 8,
@@ -1897,7 +1971,7 @@
                             },
                             tooltip: {
                                 callbacks: {
-                                    label: function(context) {
+                                    label: function (context) {
                                         const total = context.dataset.data.reduce((a, b) => a + b, 0);
                                         const percentage = ((context.raw / total) * 100).toFixed(1);
                                         return `${context.dataset.label}: ${context.formattedValue} 噸 / 總量 ${total.toLocaleString()} 噸 (${percentage}%)`;
@@ -2214,7 +2288,7 @@
             const yearFilter = document.getElementById('yearFilter')?.value || 'all';
             const industryFilter = document.getElementById('industryFilter')?.value || 'all';
             const sizeFilter = document.getElementById('sizeFilter')?.value || 'all';
-            
+
             // 優先使用產業過濾器，其次是規模，最後是年度
             let dataKey = 'all';
             if (industryFilter !== 'all') {
@@ -2224,12 +2298,12 @@
             } else if (yearFilter !== 'all') {
                 dataKey = yearFilter;
             }
-            
+
             const selectedData = dataSet[dataKey] || dataSet.all;
-            
+
             // 顯示載入動畫
             showLoadingAnimation();
-            
+
             // 延遲更新以顯示載入效果
             setTimeout(() => {
                 updateStatCards(selectedData);
@@ -2241,14 +2315,14 @@
         function updateStatCards(data) {
             const statNumbers = document.querySelectorAll('.stat-number');
             const statTrends = document.querySelectorAll('.stat-trend');
-            
+
             if (statNumbers.length >= 4) {
                 // 動畫更新數字
                 animateNumber(statNumbers[0], parseInt(statNumbers[0].textContent.replace(/,/g, '')), data.stats[0]);
                 animateNumber(statNumbers[1], parseInt(statNumbers[1].textContent.replace(/,/g, '')), data.stats[1]);
                 animateNumber(statNumbers[2], parseFloat(statNumbers[2].textContent), data.stats[2], '%');
                 animateNumber(statNumbers[3], parseFloat(statNumbers[3].textContent), data.stats[3], '%');
-                
+
                 // 更新趨勢指標
                 if (statTrends.length >= 4) {
                     const trends = data.trends[0];
@@ -2256,7 +2330,7 @@
                         const value = trends[index];
                         const arrow = value >= 0 ? '▲' : '▼';
                         const className = value >= 0 ? 'trend-up' : 'trend-down';
-                        
+
                         trend.className = `stat-trend ${className}`;
                         trend.textContent = `${arrow} ${Math.abs(value)}%`;
                     });
@@ -2267,24 +2341,24 @@
         function animateNumber(element, start, end, suffix = '') {
             const duration = 1000;
             const startTime = Date.now();
-            
+
             function update() {
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(elapsed / duration, 1);
-                
+
                 const current = start + (end - start) * easeOutCubic(progress);
-                
+
                 if (suffix === '%') {
                     element.textContent = current.toFixed(1) + suffix;
                 } else {
                     element.textContent = Math.round(current).toLocaleString();
                 }
-                
+
                 if (progress < 1) {
                     requestAnimationFrame(update);
                 }
             }
-            
+
             requestAnimationFrame(update);
         }
 
@@ -2300,7 +2374,7 @@
                 trendChart.data.datasets[1].data = data.trendData.carbon;
                 trendChart.update('active');
             }
-            
+
             // 更新企業排名圖表
             const rankingChart = currentCharts.companyRankingChart;
             if (rankingChart) {
@@ -2315,7 +2389,7 @@
                 card.style.opacity = '0.7';
                 card.style.transform = 'scale(0.98)';
             });
-            
+
             // 顯示載入指示器
             const loadingIndicator = document.createElement('div');
             loadingIndicator.id = 'loadingIndicator';
@@ -2341,12 +2415,12 @@
                 card.style.opacity = '1';
                 card.style.transform = 'scale(1)';
             });
-            
+
             const loadingIndicator = document.getElementById('loadingIndicator');
             if (loadingIndicator) {
                 loadingIndicator.remove();
             }
-            
+
             // 顯示成功提示
             showSuccessMessage();
         }
@@ -2375,9 +2449,9 @@
                     }
                 </style>
             `;
-            
+
             document.body.appendChild(successMsg);
-            
+
             // 3秒後自動消失
             setTimeout(() => {
                 const msgElement = successMsg.querySelector('div');
@@ -2402,19 +2476,19 @@
         // 初始化
         document.addEventListener('DOMContentLoaded', () => {
             initOverviewCharts();
-            
+
             // 綁定過濾器事件監聽器
             const yearFilter = document.getElementById('yearFilter');
             const industryFilter = document.getElementById('industryFilter');
             const sizeFilter = document.getElementById('sizeFilter');
-            
+
             if (yearFilter) yearFilter.addEventListener('change', updateData);
             if (industryFilter) industryFilter.addEventListener('change', updateData);
             if (sizeFilter) sizeFilter.addEventListener('change', updateData);
-            
+
             // 綁定企業搜尋功能
             initCompanySearch();
-            
+
             // 進度條動畫
             setTimeout(() => {
                 document.querySelectorAll('.progress-fill').forEach(fill => {
@@ -2427,12 +2501,12 @@
         function initCompanySearch() {
             const searchInput = document.getElementById('companySearch');
             const companyCards = document.querySelectorAll('.company-detail-card');
-            
+
             if (!searchInput) return;
-            
-            searchInput.addEventListener('input', function(e) {
+
+            searchInput.addEventListener('input', function (e) {
                 const searchTerm = e.target.value.toLowerCase().trim();
-                
+
                 if (searchTerm === '') {
                     // 顯示所有企業卡片
                     companyCards.forEach(card => {
@@ -2442,11 +2516,11 @@
                     });
                 } else {
                     let foundMatch = false;
-                    
+
                     companyCards.forEach(card => {
                         const companyName = card.dataset.company.toLowerCase();
                         const fullCompanyName = card.querySelector('.company-name').textContent.toLowerCase();
-                        
+
                         if (companyName.includes(searchTerm) || fullCompanyName.includes(searchTerm)) {
                             // 匹配的企業 - 顯示並高亮
                             card.style.display = 'block';
@@ -2455,12 +2529,12 @@
                             card.style.boxShadow = '0 25px 70px rgba(16, 185, 129, 0.2)';
                             card.style.border = '2px solid #10b981';
                             foundMatch = true;
-                            
+
                             // 平滑滾動到匹配的企業
                             if (searchTerm.length >= 2) {
                                 setTimeout(() => {
-                                    card.scrollIntoView({ 
-                                        behavior: 'smooth', 
+                                    card.scrollIntoView({
+                                        behavior: 'smooth',
                                         block: 'center',
                                         inline: 'nearest'
                                     });
@@ -2475,7 +2549,7 @@
                             card.style.border = '';
                         }
                     });
-                    
+
                     // 如果沒有找到匹配項，顯示提示
                     if (!foundMatch && searchTerm.length >= 2) {
                         showSearchNoResults(searchTerm);
@@ -2484,19 +2558,19 @@
                     }
                 }
             });
-            
+
             // 清除搜尋時的重置效果
-            searchInput.addEventListener('keydown', function(e) {
+            searchInput.addEventListener('keydown', function (e) {
                 if (e.key === 'Escape') {
                     e.target.value = '';
                     e.target.dispatchEvent(new Event('input'));
                 }
             });
         }
-        
+
         function showSearchNoResults(searchTerm) {
             hideSearchNoResults(); // 先清除舊的提示
-            
+
             const noResultsDiv = document.createElement('div');
             noResultsDiv.id = 'searchNoResults';
             noResultsDiv.innerHTML = `
@@ -2510,13 +2584,13 @@
                     </div>
                 </div>
             `;
-            
+
             const searchContainer = document.querySelector('.search-container');
             if (searchContainer) {
                 searchContainer.appendChild(noResultsDiv);
             }
         }
-        
+
         function hideSearchNoResults() {
             const existing = document.getElementById('searchNoResults');
             if (existing) {
@@ -2533,42 +2607,6 @@
             });
         });
     </script>
-    
-    <!-- 網頁底部資訊 -->
-    <footer class="dashboard-footer" style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); padding: 40px 0; margin-top: 50px; border-top: 1px solid rgba(148, 163, 184, 0.2);">
-        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 30px;">
-            <div class="footer-content" style="text-align: center; color: #94a3b8;">
-                <h4 style="color: #10b981; font-size: 1.2rem; margin-bottom: 20px;">關於本儀表板</h4>
-                
-                <div class="footer-info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px; text-align: left;">
-                    <div class="footer-info-item">
-                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">📊 數據資料來源</strong>
-                        <p style="line-height: 1.6; font-size: 0.9rem;">本儀表板所有數據均來自各上市公司公開發布之ESG永續報告書，並經系統化提取與驗證。</p>
-                    </div>
-                    
-                    <div class="footer-info-item">
-                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">💰 計畫補助</strong>
-                        <p style="line-height: 1.6; font-size: 0.9rem;">本系統由環境部資源循環署「資源循環創新及研究發展計畫」補助開發。</p>
-                    </div>
-                    
-                    <div class="footer-info-item">
-                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">🏢 執行單位</strong>
-                        <p style="line-height: 1.6; font-size: 0.9rem;">財團法人商業發展研究院（主辦）<br>國立臺灣大學資訊工程學系（技術協力）</p>
-                    </div>
-                    
-                    <div class="footer-info-item">
-                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">🔄 更新頻率</strong>
-                        <p style="line-height: 1.6; font-size: 0.9rem;">每季更新，配合上市公司ESG報告發布時程</p>
-                    </div>
-                </div>
-                
-                <div class="footer-divider" style="height: 1px; background: rgba(148, 163, 184, 0.2); margin: 30px auto; max-width: 600px;"></div>
-                
-                <div class="footer-bottom" style="font-size: 0.85rem; color: #64748b;">
-                    <p>© 2024 台灣塑膠產業ESG循環經濟智能分析平台 | 版權所有</p>
-                </div>
-            </div>
-        </div>
-    </footer>
 </body>
+
 </html>
