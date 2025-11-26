@@ -1571,39 +1571,44 @@
                             <thead>
                                 <tr>
                                     <th>預測項目</th>
-                                    <th>2025預測值</th>
-                                    <th>2026預測值</th>
-                                    <th>2027預測值</th>
+                                    <th>2024基準值</th>
+                                    <th>2025成長率</th>
+                                    <th>2026成長率</th>
+                                    <th>2027成長率</th>
                                     <th>信心度</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>總回收量 (萬噸)</td>
-                                    <td>29.2</td>
-                                    <td>32.1</td>
-                                    <td>35.8</td>
+                                    <td>總回收量</td>
+                                    <td>26.5萬噸</td>
+                                    <td>+10.2%</td>
+                                    <td>+21.1%</td>
+                                    <td>+35.1%</td>
                                     <td><span class="tag high">89%</span></td>
                                 </tr>
                                 <tr>
                                     <td>平均回收率</td>
-                                    <td>68.3%</td>
-                                    <td>72.1%</td>
-                                    <td>76.9%</td>
+                                    <td>58.9%</td>
+                                    <td>+15.9%</td>
+                                    <td>+22.4%</td>
+                                    <td>+30.6%</td>
                                     <td><span class="tag high">91%</span></td>
                                 </tr>
                                 <tr>
                                     <td>再生能源使用率</td>
-                                    <td>2.8%</td>
-                                    <td>4.2%</td>
-                                    <td>6.1%</td>
+                                    <td>1.8%</td>
+                                    <td>+55.6%</td>
+                                    <td>+133.3%</td>
+                                    <td>+238.9%</td>
                                     <td><span class="tag medium">74%</span></td>
                                 </tr>
                                 <tr>
-                                    <td>碳減量 (萬噸CO2e)</td>
-                                    <td>52.3</td>
-                                    <td>58.7</td>
-                                    <td>66.2</td>
+                                    <td>碳減量</td>
+                                    <td>47.9萬噸</td>
+                                    <td>+9.2%</td>
+                                    <td>+22.5%</td>
+                                    <td>+38.2%</td>
                                     <td><span class="tag high">87%</span></td>
                                 </tr>
                             </tbody>
@@ -1813,6 +1818,15 @@
                         plugins: {
                             legend: {
                                 position: 'bottom'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((context.raw / total) * 100).toFixed(1);
+                                        return `${context.label}: ${context.formattedValue} 噸CO2e / 總量 ${total.toLocaleString()} 噸CO2e (${percentage}%)`;
+                                    }
+                                }
                             }
                         }
                     }
@@ -1880,11 +1894,30 @@
                         plugins: {
                             legend: {
                                 display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                        const percentage = ((context.raw / total) * 100).toFixed(1);
+                                        return `${context.dataset.label}: ${context.formattedValue} 噸 / 總量 ${total.toLocaleString()} 噸 (${percentage}%)`;
+                                    }
+                                }
                             }
                         },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                title: {
+                                    display: true,
+                                    text: '材料流量 (噸)'
+                                }
+                            },
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: '材料流向階段'
+                                }
                             }
                         }
                     }
@@ -2500,5 +2533,42 @@
             });
         });
     </script>
+    
+    <!-- 網頁底部資訊 -->
+    <footer class="dashboard-footer" style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(20px); padding: 40px 0; margin-top: 50px; border-top: 1px solid rgba(148, 163, 184, 0.2);">
+        <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 0 30px;">
+            <div class="footer-content" style="text-align: center; color: #94a3b8;">
+                <h4 style="color: #10b981; font-size: 1.2rem; margin-bottom: 20px;">關於本儀表板</h4>
+                
+                <div class="footer-info-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-bottom: 30px; text-align: left;">
+                    <div class="footer-info-item">
+                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">📊 數據資料來源</strong>
+                        <p style="line-height: 1.6; font-size: 0.9rem;">本儀表板所有數據均來自各上市公司公開發布之ESG永續報告書，並經系統化提取與驗證。</p>
+                    </div>
+                    
+                    <div class="footer-info-item">
+                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">💰 計畫補助</strong>
+                        <p style="line-height: 1.6; font-size: 0.9rem;">本系統由環境部資源循環署「資源循環創新及研究發展計畫」補助開發。</p>
+                    </div>
+                    
+                    <div class="footer-info-item">
+                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">🏢 執行單位</strong>
+                        <p style="line-height: 1.6; font-size: 0.9rem;">財團法人商業發展研究院（主辦）<br>國立臺灣大學資訊工程學系（技術協力）</p>
+                    </div>
+                    
+                    <div class="footer-info-item">
+                        <strong style="color: #cbd5e1; display: block; margin-bottom: 8px;">🔄 更新頻率</strong>
+                        <p style="line-height: 1.6; font-size: 0.9rem;">每季更新，配合上市公司ESG報告發布時程</p>
+                    </div>
+                </div>
+                
+                <div class="footer-divider" style="height: 1px; background: rgba(148, 163, 184, 0.2); margin: 30px auto; max-width: 600px;"></div>
+                
+                <div class="footer-bottom" style="font-size: 0.85rem; color: #64748b;">
+                    <p>© 2024 台灣塑膠產業ESG循環經濟智能分析平台 | 版權所有</p>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>
